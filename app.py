@@ -49,26 +49,37 @@ def home():
 @app.route("/predict",methods=["POST"])
 def predict():
     file=request.files["image"]
-    path=os.path.join("temp.jpg")
+    path="temp.jpg"
     file.save(path)
+
     img_gray=cv2.imread(path,0)
     kp_input,des_input=orb.detectAndCompute(img_gray,None)
+
     similarity_scores=[]
+
     if des_input is not None:
         for des_db in areca_bank:
+            if des_db is None:
+                continue
+
             matches=bf.match(des_input,des_db)
             matches=sorted(matches,key=lambda x:x.distance)
             good=[m for m in matches if m.distance<30]
             similarity_scores.append(len(good))
+
     best_score=max(similarity_scores) if similarity_scores else 0
     threshold=80
+
     if best_score<threshold:
         return jsonify({"result":"Not an areca leaf"})
+
     img=Image.open(path).convert("RGB")
     img_tensor=transform(img).unsqueeze(0).to(device)
+
     with torch.no_grad():
         outputs=model(img_tensor)
         pred=torch.argmax(outputs,dim=1).item()
+
     return jsonify({"result":disease_names[pred]})
 
 if __name__=="__main__":
