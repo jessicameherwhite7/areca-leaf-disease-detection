@@ -2,6 +2,7 @@ flask
 torch
 torchvision
 opencv-python
-pillow
 numpy
+pillow
+gdown
 gunicorn
