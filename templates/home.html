@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Areca Leaf Disease Detection</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f4f6f8;
+}
+
+/* Header */
+header{
+    background:#1b5e20;
+    padding:20px;
+    color:white;
+    text-align:center;
+}
+
+nav a{
+    color:white;
+    margin:20px;
+    font-size:18px;
+    text-decoration:none;
+    cursor:pointer;
+}
+
+/* Page Sections */
+.page{
+    display:none;
+    padding:40px;
+}
+
+.active{
+    display:block;
+}
+
+/* Home Styling */
+.home-content{
+    max-width:900px;
+    margin:auto;
+    line-height:1.8;
+    font-size:18px;
+}
+
+/* Detection Styling */
+.detect-box{
+    text-align:center;
+    margin-top:40px;
+}
+
+input{
+    padding:10px;
+    font-size:16px;
+}
+
+button{
+    padding:10px 20px;
+    font-size:16px;
+    background:#2e7d32;
+    color:white;
+    border:none;
+    cursor:pointer;
+    margin-top:20px;
+}
+
+button:hover{
+    background:#1b5e20;
+}
+
+#preview{
+    margin-top:20px;
+    max-width:300px;
+}
+
+#result{
+    margin-top:20px;
+    font-size:22px;
+    font-weight:bold;
+    color:#1b5e20;
+}
+
+footer{
+    text-align:center;
+    padding:15px;
+    background:#1b5e20;
+    color:white;
+    margin-top:50px;
+}
+</style>
+
+</head>
+<body>
+
+<header>
+<h1>Areca Leaf Disease Detection System</h1>
+<nav>
+<a onclick="showPage('home')">Home</a>
+<a onclick="showPage('detect')">Detection</a>
+</nav>
+</header>
+
+<!-- HOME PAGE -->
+<div id="home" class="page active">
+<div class="home-content">
+
+<h2>Introduction to Areca Leaf Diseases</h2>
+
+<p>
+Areca nut cultivation plays an important role in agriculture. 
+However, areca plants are highly affected by fungal and bacterial infections,
+which reduce crop yield and quality.
+</p>
+
+<h3>1. Leaf Spot Disease</h3>
+<p>
+Leaf spot disease is caused mainly by fungal pathogens.
+It appears as small brown or black circular spots on the leaf surface.
+Over time, these spots enlarge and may merge, causing leaf drying.
+High humidity and poor air circulation increase the spread of this disease.
+</p>
+
+<h3>2. Yellow Leaf Disease</h3>
+<p>
+Yellow leaf disease causes gradual yellowing of leaves starting from the tips.
+The plant becomes weak and growth reduces.
+This disease is often associated with nutrient deficiency and microbial infection.
+</p>
+
+<h3>3. Healthy Leaf</h3>
+<p>
+A healthy areca leaf is uniformly green in color,
+free from spots, patches, or discoloration.
+Healthy leaves indicate proper nutrient levels and disease-free growth.
+</p>
+
+<p>
+This project uses a Convolutional Neural Network (CNN) model
+to automatically detect whether an uploaded areca leaf image
+is Healthy or affected by a specific disease.
+</p>
+
+</div>
+</div>
+
+<!-- DETECTION PAGE -->
+<div id="detect" class="page">
+<div class="detect-box">
+
+<h2>Upload Leaf Image for Detection</h2>
+
+<input type="file" id="imageInput" accept="image/*">
+
+<br>
+
+<img id="preview">
+
+<br>
+
+<button onclick="predict()">Predict</button>
+
+<div id="result"></div>
+
+<br>
+<button onclick="showPage('home')">Back to Home</button>
+
+</div>
+</div>
+
+<footer>
+AI Based Crop Disease Detection Project
+</footer>
+
+<script>
+
+/* Page Switching */
+function showPage(page){
+    document.getElementById("home").classList.remove("active");
+    document.getElementById("detect").classList.remove("active");
+    document.getElementById(page).classList.add("active");
+
+    // Clear result when switching page
+    document.getElementById("result").innerHTML="";
+}
+
+/* Image Preview */
+let input = document.getElementById("imageInput");
+let preview = document.getElementById("preview");
+
+input.onchange = function(){
+    let file = input.files[0];
+    if(file){
+        preview.src = URL.createObjectURL(file);
+        document.getElementById("result").innerHTML="";
+    }
+}
+
+/* Prediction Logic */
+function predict(){
+
+let file=input.files[0]
+
+if(!file){
+alert("Please upload an image first.")
+return
+}
+
+let formData=new FormData()
+formData.append("image",file)
+
+fetch("/predict",{
+method:"POST",
+body:formData
+})
+.then(res=>res.json())
+.then(data=>{
+document.getElementById("result").innerHTML="Prediction: "+data.result
+})
+
+}
+
+</script>
+
+</body>
+</html>
