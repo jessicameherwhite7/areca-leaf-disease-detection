@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Areca Leaf Detection</title>
+<style>
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:#f4f6f8;
+}
+
+header{
+background:#1b5e20;
+padding:20px;
+color:white;
+text-align:center;
+}
+
+nav a{
+color:white;
+margin:20px;
+font-size:18px;
+text-decoration:none;
+}
+
+.container{
+text-align:center;
+padding:40px;
+}
+
+input{
+padding:10px;
+font-size:16px;
+}
+
+button{
+padding:10px 20px;
+font-size:16px;
+background:#2e7d32;
+color:white;
+border:none;
+cursor:pointer;
+margin-top:20px;
+}
+
+button:hover{
+background:#1b5e20;
+}
+
+#preview{
+margin-top:20px;
+max-width:350px;
+}
+
+#result{
+margin-top:20px;
+font-size:22px;
+font-weight:bold;
+color:#1b5e20;
+}
+
+footer{
+text-align:center;
+padding:15px;
+background:#1b5e20;
+color:white;
+margin-top:50px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Areca Leaf Disease Detection System</h1>
+<nav>
+<a href="/">Home</a>
+</nav>
+</header>
+
+<div class="container">
+
+<h2>Upload Leaf Image for Detection</h2>
+
+<form id="uploadForm">
+<input type="file" id="imageInput" name="image" accept="image/*" required>
+<br>
+<img id="preview">
+<br>
+<button type="submit">Predict</button>
+</form>
+
+<div id="result"></div>
+
+</div>
+
+<footer>
+AI Based Crop Disease Detection Project
+</footer>
+
+<script>
+
+let input=document.getElementById("imageInput")
+let preview=document.getElementById("preview")
+
+input.onchange=function(){
+let file=input.files[0]
+if(file){
+preview.src=URL.createObjectURL(file)
+document.getElementById("result").innerHTML=""
+}
+}
+
+document.getElementById("uploadForm").addEventListener("submit",function(e){
+
+e.preventDefault()
+
+let formData=new FormData()
+let file=document.getElementById("imageInput").files[0]
+formData.append("image",file)
+
+fetch("/predict",{
+method:"POST",
+body:formData
+})
+.then(res=>res.json())
+.then(data=>{
+document.getElementById("result").innerHTML="Prediction: "+data.result
+})
+
+})
+
+</script>
+
+</body>
+</html>
+
