@@ -8,8 +8,13 @@ import numpy as np
 from PIL import Image
 from torchvision import transforms
 import os
+import gdown
 
 app=Flask(__name__)
+
+if not os.path.exists("orb_gate_disease_model.pt"):
+    url="https://drive.google.com/uc?id=1VJGDRJLgY-vV0FXDSgyT0kolkz6a95O1"
+    gdown.download(url,"orb_gate_disease_model.pt",quiet=False)
 
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
