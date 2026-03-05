@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -101,33 +100,54 @@ AI Based Crop Disease Detection Project
 
 <script>
 
-let input=document.getElementById("imageInput")
-let preview=document.getElementById("preview")
+const input=document.getElementById("imageInput")
+const preview=document.getElementById("preview")
+const result=document.getElementById("result")
 
 input.onchange=function(){
-let file=input.files[0]
+const file=input.files[0]
 if(file){
 preview.src=URL.createObjectURL(file)
-document.getElementById("result").innerHTML=""
+result.innerHTML=""
 }
 }
 
-document.getElementById("uploadForm").addEventListener("submit",function(e){
+document.getElementById("uploadForm").addEventListener("submit",async function(e){
 
 e.preventDefault()
 
-let formData=new FormData()
-let file=document.getElementById("imageInput").files[0]
+const file=input.files[0]
+
+if(!file){
+result.innerHTML="Please upload an image first"
+return
+}
+
+const formData=new FormData()
 formData.append("image",file)
 
-fetch("/predict",{
+result.innerHTML="Predicting..."
+
+try{
+
+const response=await fetch("/predict",{
 method:"POST",
 body:formData
 })
-.then(res=>res.json())
-.then(data=>{
-document.getElementById("result").innerHTML="Prediction: "+data.result
-})
+
+const data=await response.json()
+
+if(data.result){
+result.innerHTML="Prediction: "+data.result
+}else{
+result.innerHTML="Prediction could not be determined"
+}
+
+}catch(error){
+
+result.innerHTML="Server error while predicting"
+
+}
 
 })
 
@@ -135,4 +155,3 @@ document.getElementById("result").innerHTML="Prediction: "+data.result
 
 </body>
 </html>
-
