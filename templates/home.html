@@ -213,9 +213,17 @@ fetch("/predict",{
 method:"POST",
 body:formData
 })
-.then(res=>res.json())
+.then(res=>{
+if(!res.ok){
+throw new Error("Server error")
+}
+return res.json()
+})
 .then(data=>{
 document.getElementById("result").innerHTML="Prediction: "+data.result
+})
+.catch(err=>{
+document.getElementById("result").innerHTML="Prediction failed. Try again."
 })
 
 }
