@@ -55,6 +55,9 @@ def predict():
     img_gray=cv2.imread(path,0)
     kp_input,des_input=orb.detectAndCompute(img_gray,None)
 
+if des_input is not None and len(des_input) > 300:
+    des_input = des_input[:300]
+
     similarity_scores=[]
 
     if des_input is not None:
@@ -91,4 +94,5 @@ def predict():
 
 if __name__=="__main__":
     app.run(debug=True)
+
 
