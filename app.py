@@ -48,42 +48,54 @@ def home():
 
 @app.route("/predict",methods=["POST"])
 def predict():
+
+    if "image" not in request.files:
+        return jsonify({"result":"No image uploaded"})
+
     file=request.files["image"]
+
     path="temp.jpg"
     file.save(path)
 
     img_gray=cv2.imread(path,0)
     kp_input,des_input=orb.detectAndCompute(img_gray,None)
 
-if des_input is not None and len(des_input) > 300:
-    des_input = des_input[:300]
+    if des_input is not None and len(des_input)>300:
+        des_input=des_input[:300]
 
     similarity_scores=[]
 
     if des_input is not None:
         for des_db in areca_bank:
+
             if des_db is None:
                 continue
+
+            if len(des_db)>300:
+                des_db=des_db[:300]
 
             matches=bf.match(des_input,des_db)
 
             good_matches=0
+
             for m in matches:
-                if m.distance < 30:
-                    good_matches += 1
+                if m.distance<30:
+                    good_matches+=1
 
             similarity_scores.append(good_matches)
 
-            if good_matches > 120:
+            if good_matches>120:
                 break
 
     best_score=max(similarity_scores) if similarity_scores else 0
+
     threshold=80
 
     if best_score<threshold:
         return jsonify({"result":"Not an areca leaf"})
 
     img=Image.open(path).convert("RGB")
+
     img_tensor=transform(img).unsqueeze(0).to(device)
 
     with torch.no_grad():
@@ -94,5 +106,3 @@ if des_input is not None and len(des_input) > 300:
 
 if __name__=="__main__":
     app.run(debug=True)
-
-
