@@ -63,9 +63,16 @@ def predict():
                 continue
 
             matches=bf.match(des_input,des_db)
-            matches=sorted(matches,key=lambda x:x.distance)
-            good=[m for m in matches if m.distance<30]
-            similarity_scores.append(len(good))
+
+            good_matches=0
+            for m in matches:
+                if m.distance < 30:
+                    good_matches += 1
+
+            similarity_scores.append(good_matches)
+
+            if good_matches > 120:
+                break
 
     best_score=max(similarity_scores) if similarity_scores else 0
     threshold=80
@@ -84,3 +91,4 @@ def predict():
 
 if __name__=="__main__":
     app.run(debug=True)
+
